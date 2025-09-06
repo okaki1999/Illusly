@@ -19,11 +19,26 @@ interface Subscription {
   cancelAtPeriodEnd: boolean
 }
 
+interface Product {
+  id: string
+  name: string
+  description: string | null
+  images: string[]
+  price: {
+    id: string
+    amount: number | null
+    currency: string
+    interval: string | null
+    intervalCount: number | null
+  } | null
+}
+
 export default function BillingPage() {
   const user = useUser()
   const router = useRouter()
   const searchParams = useSearchParams()
   const [subscription, setSubscription] = useState<Subscription | null>(null)
+  const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [isProcessing, setIsProcessing] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
@@ -36,6 +51,7 @@ export default function BillingPage() {
   useEffect(() => {
     if (user) {
       fetchSubscription()
+      fetchProducts()
     }
   }, [user])
 
@@ -55,7 +71,7 @@ export default function BillingPage() {
           const data = await res.json()
           if (data.subscription) setSubscription(data.subscription)
         }
-      } catch {}
+      } catch { }
     }
     trySync()
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -75,17 +91,29 @@ export default function BillingPage() {
               const refreshed = await res.json()
               if (refreshed.subscription) setSubscription(refreshed.subscription)
             }
-          } catch {}
+          } catch { }
         }
       }
     } catch (error) {
       console.error('Error fetching subscription:', error)
+    }
+  }
+
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch('/api/stripe/products')
+      if (response.ok) {
+        const data = await response.json()
+        setProducts(data.products || [])
+      }
+    } catch (error) {
+      console.error('Error fetching products:', error)
     } finally {
       setLoading(false)
     }
   }
 
-  const handleCheckout = async () => {
+  const handleCheckout = async (priceId?: string) => {
     if (!user) {
       router.push('/auth/signup')
       return
@@ -98,7 +126,7 @@ export default function BillingPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({}),
+        body: JSON.stringify({ priceId }),
       })
       if (!response.ok) {
         const data = await response.json().catch(() => ({}))
@@ -111,7 +139,7 @@ export default function BillingPage() {
         setErrorMessage('セッションIDの取得に失敗しました')
         return
       }
-      
+
       const stripe = await stripePromise
       if (stripe) {
         const { error } = await stripe.redirectToCheckout({ sessionId })
@@ -138,12 +166,12 @@ export default function BillingPage() {
       })
 
       const data = await response.json()
-      
+
       if (!response.ok) {
         setErrorMessage(data.error || 'エラーが発生しました')
         return
       }
-      
+
       if (data.url) {
         window.location.href = data.url
       } else {
@@ -168,8 +196,8 @@ export default function BillingPage() {
           </div>
           <h2 className="text-lg font-semibold text-slate-900 mb-2">アカウント登録が必要です</h2>
           <p className="text-slate-600 text-sm mb-6">サブスクリプションをご利用いただくには新規登録が必要です</p>
-          <Button 
-            onClick={() => router.push('/auth/signup')} 
+          <Button
+            onClick={() => router.push('/auth/signup')}
             className="bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800"
             size="sm"
           >
@@ -276,7 +304,7 @@ export default function BillingPage() {
             <div className="mb-4">
               <h2 className="text-lg font-semibold text-slate-900">現在のプラン</h2>
             </div>
-            
+
             {subscription ? (
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
@@ -284,31 +312,30 @@ export default function BillingPage() {
                     <h3 className="text-base font-medium text-slate-900">プレミアムプラン</h3>
                     <p className="text-slate-600 text-sm">月額 980円（税込）</p>
                   </div>
-                  <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${
-                    (isCancelScheduled && !isPastEnd)
-                      ? 'bg-gradient-to-r from-slate-100 to-slate-200 text-slate-800'
-                      : isCanceledDisplay
+                  <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${(isCancelScheduled && !isPastEnd)
+                    ? 'bg-gradient-to-r from-slate-100 to-slate-200 text-slate-800'
+                    : isCanceledDisplay
                       ? 'bg-gradient-to-r from-slate-100 to-slate-200 text-slate-800'
                       : isActive
-                      ? 'bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800'
-                      : 'bg-gradient-to-r from-slate-100 to-slate-200 text-slate-800'
-                  }`}>
+                        ? 'bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800'
+                        : 'bg-gradient-to-r from-slate-100 to-slate-200 text-slate-800'
+                    }`}>
                     {(isCancelScheduled && !isPastEnd)
                       ? 'キャンセル予定'
                       : isCanceledDisplay
-                      ? 'キャンセル済み'
-                      : (
-                        <>
-                          {subscription.status === 'active' && '有効'}
-                          {subscription.status === 'trialing' && 'トライアル中'}
-                          {subscription.status === 'past_due' && '支払い遅延'}
-                          {subscription.status === 'incomplete' && '未完了'}
-                          {subscription.status === 'unpaid' && '未払い'}
-                        </>
-                      )}
+                        ? 'キャンセル済み'
+                        : (
+                          <>
+                            {subscription.status === 'active' && '有効'}
+                            {subscription.status === 'trialing' && 'トライアル中'}
+                            {subscription.status === 'past_due' && '支払い遅延'}
+                            {subscription.status === 'incomplete' && '未完了'}
+                            {subscription.status === 'unpaid' && '未払い'}
+                          </>
+                        )}
                   </span>
                 </div>
-                
+
                 {(() => {
                   const tz: Intl.DateTimeFormatOptions = { timeZone: 'Asia/Tokyo' }
                   const end = subscription.currentPeriodEnd ? new Date(subscription.currentPeriodEnd) : null
@@ -351,10 +378,8 @@ export default function BillingPage() {
                 )}
 
                 <div className="pt-4">
-                  {/* 請求先表示は削除 */}
-                  
                   {subscription.status === 'canceled' ? (
-                    <Button 
+                    <Button
                       onClick={handleManageSubscription}
                       disabled={isProcessing}
                       className="w-full bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800"
@@ -363,7 +388,7 @@ export default function BillingPage() {
                       {isProcessing ? '処理中...' : 'プランを再開する'}
                     </Button>
                   ) : (
-                    <Button 
+                    <Button
                       onClick={handleManageSubscription}
                       variant="outline"
                       disabled={isProcessing}
@@ -382,50 +407,72 @@ export default function BillingPage() {
             )}
           </div>
 
-          {/* Premium Plan Card */}
-          <div className="bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 text-white">
-            <div className="mb-4">
-              <h2 className="text-lg font-semibold">プレミアムプラン</h2>
-            </div>
-            
-            <div className="mb-6">
-              <div className="flex items-baseline gap-1 mb-2">
-                <span className="text-3xl font-bold">¥980</span>
-                <span className="text-white/80 text-sm">/ 月</span>
+          {/* Available Plans */}
+          <div className="space-y-4">
+            {products.length > 0 ? (
+              products.map((product) => (
+                <div key={product.id} className="bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 text-white">
+                  <div className="mb-4">
+                    <h2 className="text-lg font-semibold">{product.name}</h2>
+                    {product.description && (
+                      <p className="text-white/80 text-sm mt-1">{product.description}</p>
+                    )}
+                  </div>
+
+                  {product.price && (
+                    <div className="mb-6">
+                      <div className="flex items-baseline gap-1 mb-2">
+                        <span className="text-3xl font-bold">
+                          ¥{product.price.amount ? Math.round(product.price.amount) : '0'}
+                        </span>
+                        <span className="text-white/80 text-sm">
+                          / {product.price.interval === 'month' ? '月' : product.price.interval === 'year' ? '年' : product.price.interval}
+                        </span>
+                      </div>
+                      <p className="text-white/80 text-xs">税込価格</p>
+                    </div>
+                  )}
+
+                  <ul className="space-y-3 mb-6">
+                    <li className="flex items-start gap-3">
+                      <svg className="w-4 h-4 text-blue-300 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span className="text-white/90 text-sm">プレミアム機能</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <svg className="w-4 h-4 text-blue-300 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span className="text-white/90 text-sm">無制限のアクセス</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <svg className="w-4 h-4 text-blue-300 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span className="text-white/90 text-sm">プレミアムサポート</span>
+                    </li>
+                  </ul>
+
+                  {!subscription && product.price && (
+                    <Button
+                      onClick={() => handleCheckout(product.price!.id)}
+                      disabled={isProcessing}
+                      className="w-full bg-white text-blue-600 hover:bg-white/90 font-medium py-4 text-base"
+                      size="lg"
+                    >
+                      {isProcessing ? '処理中...' : '今すぐ登録する'}
+                    </Button>
+                  )}
+                </div>
+              ))
+            ) : (
+              <div className="bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl p-6 shadow-xl text-white">
+                <div className="text-center">
+                  <h2 className="text-lg font-semibold mb-2">商品を読み込み中...</h2>
+                  <p className="text-white/80 text-sm">Stripeから商品情報を取得しています</p>
+                </div>
               </div>
-              <p className="text-white/80 text-xs">税込価格</p>
-            </div>
-
-            <ul className="space-y-3 mb-6">
-              <li className="flex items-start gap-3">
-                <svg className="w-4 h-4 text-blue-300 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                <span className="text-white/90 text-sm">ここに特典をいれます</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <svg className="w-4 h-4 text-blue-300 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                <span className="text-white/90 text-sm">無制限のアクセス</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <svg className="w-4 h-4 text-blue-300 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                <span className="text-white/90 text-sm">プレミアムサポート</span>
-              </li>
-            </ul>
-
-            {!subscription && (
-              <Button 
-                onClick={handleCheckout}
-                disabled={isProcessing}
-                className="w-full bg-white text-blue-600 hover:bg-white/90 font-medium py-4 text-base"
-                size="lg"
-              >
-                {isProcessing ? '処理中...' : '今すぐ登録する'}
-              </Button>
             )}
           </div>
         </div>

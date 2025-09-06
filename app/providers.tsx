@@ -6,7 +6,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   // クライアント側で環境変数チェック
   const projectId = process.env.NEXT_PUBLIC_STACK_PROJECT_ID;
   const publishableClientKey = process.env.NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY;
-  
+
   if (projectId && publishableClientKey) {
     const app = new StackClientApp({
       projectId,
@@ -19,13 +19,13 @@ export function Providers({ children }: { children: React.ReactNode }) {
         emailVerification: "/auth/email-verified",
       },
     });
-    
+
     return (
-      <StackProvider app={app} lang="ja">
+      <StackProvider app={app} lang="ja-JP">
         {children}
       </StackProvider>
     )
   }
-  
+
   return <>{children}</>
 }

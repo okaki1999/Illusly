@@ -7,6 +7,7 @@ import { useUser, useStackApp } from '@stackframe/stack'
 import { useRouter } from 'next/navigation'
 import { useState, useRef, useEffect } from 'react'
 import { hasStackEnv } from '@/lib/stack'
+import { signOut } from '@/lib/stack-auth'
 
 function HeaderAuthed() {
   const user = useUser()
@@ -16,7 +17,7 @@ function HeaderAuthed() {
   const dropdownRef = useRef<HTMLDivElement>(null)
 
   const handleSignOut = async () => {
-    await app.signOut()
+    await signOut(app)
     router.push('/')
     setIsDropdownOpen(false)
   }
@@ -96,7 +97,7 @@ export function Header() {
             <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-soft group-hover:shadow-medium transition-all duration-200 group-hover:scale-105">
               <Icons.zap className="w-6 h-6 text-white" />
             </div>
-            <span className="font-bold text-xl text-gray-900 group-hover:text-blue-600 transition-colors duration-200">Sample</span>
+            <span className="font-bold text-xl text-gray-900 group-hover:text-blue-600 transition-colors duration-200">Illusly</span>
           </Link>
           <nav className="flex items-center gap-2">
             {stackReady ? (

@@ -18,20 +18,20 @@ export default function Page() {
           <svg className="absolute w-full h-full" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice">
             <defs>
               <radialGradient id="grad1" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" style={{stopColor:'rgba(59, 130, 246, 0.3)', stopOpacity:1}} />
-                <stop offset="100%" style={{stopColor:'rgba(59, 130, 246, 0)', stopOpacity:0}} />
+                <stop offset="0%" style={{ stopColor: 'rgba(59, 130, 246, 0.3)', stopOpacity: 1 }} />
+                <stop offset="100%" style={{ stopColor: 'rgba(59, 130, 246, 0)', stopOpacity: 0 }} />
               </radialGradient>
               <radialGradient id="grad2" cx="50%" cy="50%" r="40%">
-                <stop offset="0%" style={{stopColor:'rgba(147, 51, 234, 0.2)', stopOpacity:1}} />
-                <stop offset="100%" style={{stopColor:'rgba(147, 51, 234, 0)', stopOpacity:0}} />
+                <stop offset="0%" style={{ stopColor: 'rgba(147, 51, 234, 0.2)', stopOpacity: 1 }} />
+                <stop offset="100%" style={{ stopColor: 'rgba(147, 51, 234, 0)', stopOpacity: 0 }} />
               </radialGradient>
             </defs>
             <circle cx="200" cy="300" r="300" fill="url(#grad1)" className="animate-pulse" />
             <circle cx="800" cy="200" r="250" fill="url(#grad2)" className="animate-bounce-subtle" />
-            <circle cx="600" cy="700" r="200" fill="url(#grad1)" className="animate-pulse" style={{animationDelay: '1s'}} />
+            <circle cx="600" cy="700" r="200" fill="url(#grad1)" className="animate-pulse" style={{ animationDelay: '1s' }} />
           </svg>
         </div>
-        
+
         {/* Subtle grid overlay */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute inset-0" style={{
@@ -39,35 +39,35 @@ export default function Page() {
             backgroundSize: '50px 50px'
           }}></div>
         </div>
-        
+
         {/* Floating particles */}
         <div className="absolute inset-0">
           <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-blue-400 rounded-full animate-ping"></div>
           <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-purple-400 rounded-full animate-pulse"></div>
           <div className="absolute bottom-1/3 left-1/3 w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce"></div>
-          <div className="absolute top-2/3 right-1/4 w-1 h-1 bg-blue-300 rounded-full animate-ping" style={{animationDelay: '2s'}}></div>
+          <div className="absolute top-2/3 right-1/4 w-1 h-1 bg-blue-300 rounded-full animate-ping" style={{ animationDelay: '2s' }}></div>
         </div>
-        
+
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center z-10">
           <div className="space-y-8 animate-fade-in">
             <div className="space-y-6">
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white">
                 <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-indigo-400">
-                  Sample
+                  Illusly
                 </span>
               </h1>
               <p className="text-xl md:text-2xl text-blue-100 max-w-4xl mx-auto leading-relaxed">
-                サブキャッチコピーで製品の価値を説明します
+                絵師のイラストを無制限に利用
                 <br />
                 <strong className="text-white">今すぐ始めましょう</strong>
               </p>
             </div>
-            
+
             <div className="pt-8">
               <Link href="/auth/signup">
                 <Button size="lg" className="text-lg px-12 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white border-0 shadow-2xl">
                   <Icons.rocket className="w-5 h-5 mr-2" />
-                  無料で始める
+                  イラストを確認
                 </Button>
               </Link>
             </div>
@@ -87,32 +87,32 @@ export default function Page() {
             </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
-            <Feature 
+            <Feature
               icon={<Icons.chart className="w-8 h-8" />}
               title="データ分析"
               desc="詳細なデータ分析機能で、ビジネスの成長をサポートします"
             />
-            <Feature 
+            <Feature
               icon={<Icons.users className="w-8 h-8" />}
               title="チーム管理"
               desc="効率的なチーム管理機能で、プロジェクトを円滑に進められます"
             />
-            <Feature 
+            <Feature
               icon={<Icons.refresh className="w-8 h-8" />}
               title="自動同期"
               desc="リアルタイム同期機能で、常に最新の情報を共有できます"
             />
-            <Feature 
+            <Feature
               icon={<Icons.smartphone className="w-8 h-8" />}
               title="モバイル対応"
               desc="スマートフォンやタブレットからもアクセス可能です"
             />
-            <Feature 
+            <Feature
               icon={<Icons.shield className="w-8 h-8" />}
               title="セキュリティ"
               desc="企業レベルのセキュリティで、大切なデータを保護します"
             />
-            <Feature 
+            <Feature
               icon={<Icons.rocket className="w-8 h-8" />}
               title="高速処理"
               desc="高速な処理性能で、ストレスフリーな操作を実現します"
@@ -132,7 +132,7 @@ export default function Page() {
               ニーズに合わせて選べる2つのプラン
             </p>
           </div>
-          
+
           <div className="grid lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Free Plan */}
             <div className="bg-white rounded-lg border-2 border-gray-200 p-8 hover:border-gray-300 transition-colors">
@@ -144,7 +144,7 @@ export default function Page() {
                   <span className="text-gray-500 ml-2">/月</span>
                 </div>
               </div>
-              
+
               <ul className="space-y-4 mb-8">
                 <li className="text-gray-700">• プロジェクト3個まで</li>
                 <li className="text-gray-700">• チームメンバー3名まで</li>
@@ -152,13 +152,13 @@ export default function Page() {
                 <li className="text-gray-700">• 基本分析機能</li>
                 <li className="text-gray-400">• API連携は利用不可</li>
               </ul>
-              
+
               <Link href="/auth/signup">
                 <Button variant="outline" size="lg" className="w-full border-2 border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white">
                   無料で始める
                 </Button>
               </Link>
-              
+
               <p className="text-sm text-gray-500 mt-4 text-center">
                 クレジットカード不要
               </p>
@@ -171,7 +171,7 @@ export default function Page() {
                   おすすめ
                 </span>
               </div>
-              
+
               <div className="mb-8">
                 <h3 className="text-2xl font-bold mb-2">プレミアム</h3>
                 <p className="text-gray-300 mb-6">チームでの本格運用に</p>
@@ -180,7 +180,7 @@ export default function Page() {
                   <span className="text-gray-400 ml-2">/月</span>
                 </div>
               </div>
-              
+
               <ul className="space-y-4 mb-8">
                 <li className="text-gray-100">• 無制限のプロジェクト</li>
                 <li className="text-gray-100">• チームメンバー20名まで</li>
@@ -188,13 +188,13 @@ export default function Page() {
                 <li className="text-gray-100">• 高度な分析機能</li>
                 <li className="text-gray-100">• API連携</li>
               </ul>
-              
+
               <Link href="/billing">
                 <Button size="lg" className="w-full bg-white text-gray-900 hover:bg-gray-100 font-semibold">
                   今すぐ始める
                 </Button>
               </Link>
-              
+
               <p className="text-sm text-gray-400 mt-4 text-center">
                 いつでもキャンセル可能
               </p>
@@ -210,20 +210,20 @@ export default function Page() {
           <svg className="absolute w-full h-full" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice">
             <defs>
               <radialGradient id="ctaGrad1" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" style={{stopColor:'rgba(59, 130, 246, 0.3)', stopOpacity:1}} />
-                <stop offset="100%" style={{stopColor:'rgba(59, 130, 246, 0)', stopOpacity:0}} />
+                <stop offset="0%" style={{ stopColor: 'rgba(59, 130, 246, 0.3)', stopOpacity: 1 }} />
+                <stop offset="100%" style={{ stopColor: 'rgba(59, 130, 246, 0)', stopOpacity: 0 }} />
               </radialGradient>
               <radialGradient id="ctaGrad2" cx="50%" cy="50%" r="40%">
-                <stop offset="0%" style={{stopColor:'rgba(147, 51, 234, 0.2)', stopOpacity:1}} />
-                <stop offset="100%" style={{stopColor:'rgba(147, 51, 234, 0)', stopOpacity:0}} />
+                <stop offset="0%" style={{ stopColor: 'rgba(147, 51, 234, 0.2)', stopOpacity: 1 }} />
+                <stop offset="100%" style={{ stopColor: 'rgba(147, 51, 234, 0)', stopOpacity: 0 }} />
               </radialGradient>
             </defs>
             <circle cx="300" cy="400" r="250" fill="url(#ctaGrad1)" className="animate-pulse" />
             <circle cx="700" cy="300" r="200" fill="url(#ctaGrad2)" className="animate-bounce-subtle" />
-            <circle cx="500" cy="600" r="180" fill="url(#ctaGrad1)" className="animate-pulse" style={{animationDelay: '1.5s'}} />
+            <circle cx="500" cy="600" r="180" fill="url(#ctaGrad1)" className="animate-pulse" style={{ animationDelay: '1.5s' }} />
           </svg>
         </div>
-        
+
         {/* Subtle grid overlay */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute inset-0" style={{
@@ -231,26 +231,26 @@ export default function Page() {
             backgroundSize: '50px 50px'
           }}></div>
         </div>
-        
+
         {/* Floating particles */}
         <div className="absolute inset-0">
           <div className="absolute top-1/3 left-1/5 w-2 h-2 bg-blue-400 rounded-full animate-ping"></div>
           <div className="absolute top-1/4 right-1/3 w-1 h-1 bg-purple-400 rounded-full animate-pulse"></div>
           <div className="absolute bottom-1/4 left-1/3 w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce"></div>
-          <div className="absolute top-3/4 right-1/5 w-1 h-1 bg-blue-300 rounded-full animate-ping" style={{animationDelay: '2s'}}></div>
+          <div className="absolute top-3/4 right-1/5 w-1 h-1 bg-blue-300 rounded-full animate-ping" style={{ animationDelay: '2s' }}></div>
         </div>
-        
+
         <div className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
               今すぐ始めませんか
             </h2>
-            
+
             <p className="text-xl text-blue-100 mb-10 max-w-3xl mx-auto leading-relaxed">
               アカウント作成は簡単で、すぐに全ての機能をお試しいただけます。<br />
               まずは無料プランから始めて、必要に応じてアップグレードしてください。
             </p>
-            
+
             <div className="mb-8">
               <Link href="/auth/signup">
                 <Button size="lg" className="bg-white text-gray-900 hover:bg-gray-100 text-lg px-10 py-4 font-semibold">
@@ -274,15 +274,15 @@ export default function Page() {
             </p>
           </div>
           <div className="space-y-4">
-            <FAQ 
+            <FAQ
               q="料金はいつ請求されますか？"
               a="月額プランの場合、毎月同じ日に自動的に請求されます。"
             />
-            <FAQ 
+            <FAQ
               q="サポートはどのように受けられますか？"
               a="メールサポートを提供しております。"
             />
-            <FAQ 
+            <FAQ
               q="プランの変更やキャンセルはできますか？"
               a="いつでもプランの変更やキャンセルが可能です。設定画面から簡単に操作していただけます。"
             />
