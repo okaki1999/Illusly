@@ -1,7 +1,3 @@
-## StartPack
-
-Next.js + TypeScript をベースに、認証、サブスクリプション決済、お問い合わせ（メール送信）が最初から動く形で同梱された SaaS 向けスターターパックです。30 分で「ユーザー登録 → 決済 → 請求管理 → お問い合わせ」まで体験できます。
-
 ### 主な機能
 
 - **認証**: Neon Auth（Stack Auth）を `@stackframe/stack` で実装。`/auth/*` ページ、`/handler/[...stack]` ハンドラー、`middleware.ts` による保護ルート（`/dashboard`, `/billing`）を同梱
