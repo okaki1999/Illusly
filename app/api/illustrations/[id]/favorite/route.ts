@@ -2,9 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { requireAuth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
-// このAPIルートを動的にする
-export const dynamic = 'force-dynamic'
-
 /**
  * お気に入りに追加
  */

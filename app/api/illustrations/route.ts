@@ -3,9 +3,6 @@ import { requireIllustrator } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { IllustrationStatus } from '@prisma/client'
 
-// このAPIルートを動的にする
-export const dynamic = 'force-dynamic'
-
 /**
  * 作品一覧を取得
  */

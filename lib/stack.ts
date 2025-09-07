@@ -5,11 +5,20 @@ function ensureEnv() {
   const publishableClientKey =
     process.env.NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY;
   const secretServerKey = process.env.STACK_SECRET_SERVER_KEY;
-  
+
   if (!projectId || !publishableClientKey || !secretServerKey) {
-    throw new Error(
-      "Stack Auth 環境変数が未設定です。NEXT_PUBLIC_STACK_PROJECT_ID / NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY / STACK_SECRET_SERVER_KEY を設定してください。"
-    );
+    // ビルド時は環境変数が設定されていない場合があるため、ダミー値を返す
+    if (process.env.NODE_ENV === 'production' && !process.env.VERCEL) {
+      throw new Error(
+        "Stack Auth 環境変数が未設定です。NEXT_PUBLIC_STACK_PROJECT_ID / NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY / STACK_SECRET_SERVER_KEY を設定してください。"
+      );
+    }
+    // ビルド時のフォールバック
+    return {
+      projectId: projectId || 'dummy',
+      publishableClientKey: publishableClientKey || 'dummy',
+      secretServerKey: secretServerKey || 'dummy'
+    };
   }
   return { projectId, publishableClientKey, secretServerKey };
 }
@@ -18,13 +27,13 @@ export function getStackClientApp() {
   // クライアント側ではNEXT_PUBLIC_のみ使用
   const projectId = process.env.NEXT_PUBLIC_STACK_PROJECT_ID;
   const publishableClientKey = process.env.NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY;
-  
+
   if (!projectId || !publishableClientKey) {
     throw new Error(
       "Stack Auth クライアント環境変数が未設定です。NEXT_PUBLIC_STACK_PROJECT_ID / NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY を設定してください。"
     );
   }
-  
+
   return new StackClientApp({
     projectId,
     publishableClientKey,

@@ -11,7 +11,15 @@ declare global {
   var prisma: PrismaClient | undefined
 }
 
-export const prisma = globalThis.prisma || new PrismaClient()
+// ビルド時のフォールバック処理
+const databaseUrl = process.env.DATABASE_URL || 'postgresql://dummy:dummy@localhost:5432/dummy';
+export const prisma = globalThis.prisma || new PrismaClient({
+  datasources: {
+    db: {
+      url: databaseUrl,
+    },
+  },
+})
 
 if (process.env.NODE_ENV !== 'production') {
   globalThis.prisma = prisma

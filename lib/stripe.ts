@@ -2,12 +2,13 @@ import Stripe from "stripe";
 
 // Stripe インスタンスの初期化
 // - API バージョンは指定せず、アカウントのデフォルトを使用
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+const stripeSecretKey = process.env.STRIPE_SECRET_KEY || 'sk_test_dummy';
+export const stripe = new Stripe(stripeSecretKey, {
   typescript: true,
 });
 
 // 価格IDを環境変数から取得
-export const STRIPE_PRICE_ID = process.env.STRIPE_PRICE_ID!;
+export const STRIPE_PRICE_ID = process.env.STRIPE_PRICE_ID || 'price_dummy';
 
 // サブスクリプションのステータスを日本語に変換
 export function getSubscriptionStatusLabel(status: string): string {

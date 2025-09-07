@@ -263,26 +263,28 @@ AWS_S3_BUCKET=your_bucket_name
    Vercelのダッシュボードで以下の環境変数を設定：
 
    ```bash
-   # Database
+   # Database (必須)
    DATABASE_URL="postgresql://username:password@host:5432/database"
 
-   # Stack Auth
-   STACK_PROJECT_ID="your_stack_project_id"
-   STACK_PUBLISHABLE_CLIENT_KEY="your_stack_publishable_client_key"
-   STACK_SERVER_SECRET_KEY="your_stack_server_secret_key"
+   # Stack Auth (必須)
+   NEXT_PUBLIC_STACK_PROJECT_ID="your_stack_project_id"
+   NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY="your_stack_publishable_client_key"
+   STACK_SECRET_SERVER_KEY="your_stack_server_secret_key"
 
-   # Stripe
+   # Stripe (必須)
    STRIPE_SECRET_KEY="sk_live_..."
    STRIPE_PUBLISHABLE_KEY="pk_live_..."
    STRIPE_PRICE_ID="price_..."
    STRIPE_WEBHOOK_SECRET="whsec_..."
 
-   # App URL
+   # App URL (必須)
    NEXT_PUBLIC_APP_URL="https://your-domain.vercel.app"
 
-   # Email (Resend)
+   # Email (必須)
    RESEND_API_KEY="re_..."
    ```
+
+   **重要**: ビルドエラーを避けるため、**すべての環境変数を設定してからデプロイ**してください。
 
 3. **データベースの準備**
    - [Neon](https://neon.tech)または[Supabase](https://supabase.com)でPostgreSQLデータベースを作成

@@ -3,9 +3,6 @@ import { getStackServerApp } from '@/lib/stack'
 import { stripe, STRIPE_PRICE_ID } from '@/lib/stripe'
 import { prisma } from '@/lib/prisma'
 
-// このAPIルートを動的にする
-export const dynamic = 'force-dynamic'
-
 export async function POST(req: NextRequest) {
   try {
     const app = getStackServerApp()

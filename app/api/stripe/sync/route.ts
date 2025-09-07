@@ -4,9 +4,6 @@ import { prisma } from "@/lib/prisma";
 import { getStackServerApp } from "@/lib/stack";
 import { SubscriptionStatus } from "@prisma/client";
 
-// このAPIルートを動的にする
-export const dynamic = 'force-dynamic';
-
 // フォールバック用: Checkout からの戻り時に、webhook 未反映でも DB を同期待ち/更新する
 export async function POST(req: NextRequest) {
   try {
