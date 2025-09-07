@@ -3,11 +3,14 @@ import { getStackServerApp } from '@/lib/stack'
 import { stripe } from '@/lib/stripe'
 import { prisma } from '@/lib/prisma'
 
+// このAPIルートを動的にする
+export const dynamic = 'force-dynamic'
+
 export async function POST(req: NextRequest) {
   try {
     const app = getStackServerApp()
     const user = await app.getUser()
-    
+
     if (!user) {
       return NextResponse.json(
         { error: '認証が必要です' },
@@ -28,7 +31,7 @@ export async function POST(req: NextRequest) {
     }
 
     // return_urlの確認
-    const returnUrl = process.env.NEXT_PUBLIC_APP_URL 
+    const returnUrl = process.env.NEXT_PUBLIC_APP_URL
       ? `${process.env.NEXT_PUBLIC_APP_URL}/billing`
       : 'http://localhost:3002/billing'
 
@@ -42,9 +45,9 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     console.error('Portal session error:', error)
     return NextResponse.json(
-      { 
+      {
         error: 'エラーが発生しました',
-        details: error.message 
+        details: error.message
       },
       { status: 500 }
     )

@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser, updateUserRole, requireAuth } from '@/lib/auth'
 import { UserRole } from '@prisma/client'
 
+// このAPIルートを動的にする
+export const dynamic = 'force-dynamic'
+
 /**
  * 現在のユーザーのロールを取得
  */

@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
+// このAPIルートを動的にする
+export const dynamic = 'force-dynamic'
+
 /**
  * 作品詳細を取得
  */

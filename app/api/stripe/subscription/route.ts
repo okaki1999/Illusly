@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { getStackServerApp } from "@/lib/stack";
 import { prisma } from "@/lib/prisma";
 
+// このAPIルートを動的にする
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
   try {
     const app = getStackServerApp();
