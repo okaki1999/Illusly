@@ -51,3 +51,5 @@ export async function POST(_req: NextRequest) {
 }
 
 export const runtime = "nodejs";
+// 認証が必要なAPIルートは動的にする
+export const dynamic = 'force-dynamic';

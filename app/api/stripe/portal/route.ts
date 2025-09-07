@@ -3,6 +3,9 @@ import { getStackServerApp } from '@/lib/stack'
 import { stripe } from '@/lib/stripe'
 import { prisma } from '@/lib/prisma'
 
+// 認証が必要なAPIルートは動的にする
+export const dynamic = 'force-dynamic'
+
 export async function POST(req: NextRequest) {
   try {
     const app = getStackServerApp()

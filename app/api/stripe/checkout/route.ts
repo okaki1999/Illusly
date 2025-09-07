@@ -3,6 +3,9 @@ import { getStackServerApp } from '@/lib/stack'
 import { stripe, STRIPE_PRICE_ID } from '@/lib/stripe'
 import { prisma } from '@/lib/prisma'
 
+// 認証が必要なAPIルートは動的にする
+export const dynamic = 'force-dynamic'
+
 export async function POST(req: NextRequest) {
   try {
     const app = getStackServerApp()
@@ -45,8 +48,8 @@ export async function POST(req: NextRequest) {
         },
       ],
       // 成功時に Checkout の session_id をクエリに含める（Webhook 遅延時のフォールバック用）
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/billing?success=true&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/billing?canceled=true`,
+      success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3002'}/billing?success=true&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3002'}/billing?canceled=true`,
       customer: customerId,
       customer_email: customerId ? undefined : user.primaryEmail,
       client_reference_id: user.id,
