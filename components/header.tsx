@@ -35,6 +35,12 @@ function HeaderAuthed() {
   if (!user) {
     return (
       <>
+        <Link href="/illustrations">
+          <Button variant="ghost" className="text-gray-700">作品一覧</Button>
+        </Link>
+        <Link href="/pricing">
+          <Button variant="ghost" className="text-gray-700">料金プラン</Button>
+        </Link>
         <Link href="/auth/signin">
           <Button variant="ghost" className="hover:bg-blue-50 hover:text-blue-700 rounded-lg">
             ログイン
@@ -51,11 +57,23 @@ function HeaderAuthed() {
 
   return (
     <>
+      <Link href="/illustrations">
+        <Button variant="ghost" className="text-gray-700">作品一覧</Button>
+      </Link>
+      <Link href="/favorites">
+        <Button variant="ghost" className="text-gray-700">お気に入り</Button>
+      </Link>
+      <Link href="/downloads">
+        <Button variant="ghost" className="text-gray-700">ダウンロード</Button>
+      </Link>
       <Link href="/dashboard">
         <Button variant="ghost" className="text-gray-700">ダッシュボード</Button>
       </Link>
+      <Link href="/pricing">
+        <Button variant="ghost" className="text-gray-700">料金プラン</Button>
+      </Link>
       <Link href="/billing">
-        <Button variant="ghost" className="text-gray-700">プラン</Button>
+        <Button variant="ghost" className="text-gray-700">プラン管理</Button>
       </Link>
       <div className="relative ml-4" ref={dropdownRef}>
         <button
@@ -104,6 +122,9 @@ export function Header() {
               <HeaderAuthed />
             ) : (
               <>
+                <Link href="/illustrations">
+                  <Button variant="ghost" className="text-gray-700">作品一覧</Button>
+                </Link>
                 <Link href="/contact">
                   <Button variant="ghost" className="text-gray-700">お問い合わせ</Button>
                 </Link>

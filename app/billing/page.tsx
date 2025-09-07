@@ -33,15 +33,27 @@ interface Product {
   } | null
 }
 
+interface PaymentHistory {
+  id: string
+  amount: number
+  currency: string
+  status: string
+  description: string
+  createdAt: string
+  receiptUrl?: string
+}
+
 export default function BillingPage() {
   const user = useUser()
   const router = useRouter()
   const searchParams = useSearchParams()
   const [subscription, setSubscription] = useState<Subscription | null>(null)
   const [products, setProducts] = useState<Product[]>([])
+  const [paymentHistory, setPaymentHistory] = useState<PaymentHistory[]>([])
   const [loading, setLoading] = useState(true)
   const [isProcessing, setIsProcessing] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [showPaymentHistory, setShowPaymentHistory] = useState(false)
 
   // 成功/キャンセルパラメータの確認
   const success = searchParams.get('success')
@@ -52,6 +64,7 @@ export default function BillingPage() {
     if (user) {
       fetchSubscription()
       fetchProducts()
+      fetchPaymentHistory()
     }
   }, [user])
 
@@ -110,6 +123,18 @@ export default function BillingPage() {
       console.error('Error fetching products:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const fetchPaymentHistory = async () => {
+    try {
+      const response = await fetch('/api/stripe/payment-history')
+      if (response.ok) {
+        const data = await response.json()
+        setPaymentHistory(data.payments || [])
+      }
+    } catch (error) {
+      console.error('Error fetching payment history:', error)
     }
   }
 
@@ -294,6 +319,64 @@ export default function BillingPage() {
                 <p className="text-slate-800 text-sm font-medium">お支払いがキャンセルされました</p>
                 <p className="text-slate-700 text-xs mt-1">いつでも再度お申し込みいただけます。</p>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Payment History Toggle */}
+        {subscription && (
+          <div className="mb-6">
+            <Button
+              onClick={() => setShowPaymentHistory(!showPaymentHistory)}
+              variant="outline"
+              className="border-slate-200 hover:bg-slate-50"
+            >
+              {showPaymentHistory ? '支払い履歴を隠す' : '支払い履歴を表示'}
+            </Button>
+          </div>
+        )}
+
+        {/* Payment History */}
+        {showPaymentHistory && paymentHistory.length > 0 && (
+          <div className="mb-8 bg-white/80 backdrop-blur-sm rounded-2xl border border-white/20 p-6 shadow-xl">
+            <h2 className="text-lg font-semibold text-slate-900 mb-4">支払い履歴</h2>
+            <div className="space-y-3">
+              {paymentHistory.map((payment) => (
+                <div key={payment.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-slate-900">{payment.description}</p>
+                    <p className="text-xs text-slate-600">
+                      {new Date(payment.createdAt).toLocaleDateString('ja-JP')}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-medium text-slate-900">
+                      ¥{payment.amount.toLocaleString()}
+                    </p>
+                    <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${payment.status === 'succeeded'
+                        ? 'bg-green-100 text-green-800'
+                        : payment.status === 'pending'
+                          ? 'bg-yellow-100 text-yellow-800'
+                          : 'bg-red-100 text-red-800'
+                      }`}>
+                      {payment.status === 'succeeded' ? '完了' :
+                        payment.status === 'pending' ? '処理中' : '失敗'}
+                    </span>
+                  </div>
+                  {payment.receiptUrl && (
+                    <div className="ml-4">
+                      <a
+                        href={payment.receiptUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:text-blue-800 text-sm"
+                      >
+                        領収書
+                      </a>
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
         )}

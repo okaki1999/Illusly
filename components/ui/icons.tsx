@@ -9,6 +9,8 @@ import {
   Check,
   ArrowRight,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   Mail,
   Lock,
   Eye,
@@ -30,7 +32,11 @@ import {
   FileText,
   UserPlus,
   Key,
-  MailCheck
+  MailCheck,
+  Upload,
+  Search,
+  Download,
+  Image
 } from 'lucide-react'
 
 export const Icons = {
@@ -41,7 +47,7 @@ export const Icons = {
   user: User,
   settings: Settings,
   logout: LogOut,
-  
+
   // ビジネス
   chart: BarChart3,
   users: Users,
@@ -52,31 +58,41 @@ export const Icons = {
   trending: TrendingUp,
   globe: Globe,
   zap: Zap,
-  
+
   // フォーム
   mail: Mail,
   lock: Lock,
   eye: Eye,
   eyeOff: EyeOff,
-  
+
   // UI
   check: Check,
   arrowRight: ArrowRight,
   chevronDown: ChevronDown,
+  chevronLeft: ChevronLeft,
+  chevronRight: ChevronRight,
   loader: Loader2,
   star: Star,
   heart: Heart,
   message: MessageCircle,
   file: FileText,
   x: X,
-  
+
   // 認証
   userAdd: UserPlus,
   key: Key,
   mailCheck: MailCheck,
-  
+
   // 決済
   creditCard: CreditCard,
+
+  // メディア・ファイル
+  upload: Upload,
+  search: Search,
+  download: Download,
+  image: Image,
+  check: Check,
+  x: X,
 }
 
 // アイコンのプロップスタイプ

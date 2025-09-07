@@ -1,14 +1,51 @@
+'use client'
+
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Icons } from '@/components/ui/icons'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = {
-  title: 'Sample - サブスクリプション型SaaS',
-  description: 'チームでの効率的なプロジェクト管理を実現するサブスクリプション型SaaSサービス'
+// メタデータは別ファイルで管理するか、layout.tsxで設定
+
+interface StripeProduct {
+  id: string
+  name: string
+  description: string | null
+  images: string[]
+  price: {
+    id: string
+    amount: number | null
+    currency: string
+    interval: string | undefined
+    intervalCount: number | undefined
+  } | null
 }
 
 export default function Page() {
+  const [products, setProducts] = useState<StripeProduct[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch('/api/stripe/products')
+        const data = await response.json()
+
+        if (response.ok) {
+          setProducts(data.products || [])
+        } else {
+          console.error('Failed to fetch products:', data.error)
+        }
+      } catch (error) {
+        console.error('Error fetching products:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchProducts()
+  }, [])
   return (
     <main className="min-h-screen">
       {/* Hero Section */}
@@ -57,17 +94,23 @@ export default function Page() {
                 </span>
               </h1>
               <p className="text-xl md:text-2xl text-blue-100 max-w-4xl mx-auto leading-relaxed">
-                絵師のイラストを無制限に利用
+                高品質なイラストを無制限にダウンロード
                 <br />
-                <strong className="text-white">今すぐ始めましょう</strong>
+                <strong className="text-white">クリエイターのためのイラスト配信サービス</strong>
               </p>
             </div>
 
-            <div className="pt-8">
-              <Link href="/auth/signup">
+            <div className="pt-8 flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/illustrations">
                 <Button size="lg" className="text-lg px-12 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white border-0 shadow-2xl">
-                  <Icons.rocket className="w-5 h-5 mr-2" />
-                  イラストを確認
+                  <Icons.image className="w-5 h-5 mr-2" />
+                  作品一覧を見る
+                </Button>
+              </Link>
+              <Link href="/auth/signup">
+                <Button size="lg" variant="outline" className="text-lg px-12 py-4 border-2 border-white text-white hover:bg-white hover:text-gray-900">
+                  <Icons.user className="w-5 h-5 mr-2" />
+                  無料で始める
                 </Button>
               </Link>
             </div>
@@ -83,39 +126,39 @@ export default function Page() {
               主な機能
             </h2>
             <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-              サービスの主要機能をご紹介します
+              Illuslyの特徴的な機能をご紹介します
             </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
             <Feature
-              icon={<Icons.chart className="w-8 h-8" />}
-              title="データ分析"
-              desc="詳細なデータ分析機能で、ビジネスの成長をサポートします"
+              icon={<Icons.image className="w-8 h-8" />}
+              title="高品質イラスト"
+              desc="プロのイラストレーターが制作した高品質なイラストを豊富に取り揃えています"
             />
             <Feature
-              icon={<Icons.users className="w-8 h-8" />}
-              title="チーム管理"
-              desc="効率的なチーム管理機能で、プロジェクトを円滑に進められます"
+              icon={<Icons.download className="w-8 h-8" />}
+              title="無制限ダウンロード"
+              desc="サブスクリプションでイラストを無制限にダウンロードできます"
             />
             <Feature
-              icon={<Icons.refresh className="w-8 h-8" />}
-              title="自動同期"
-              desc="リアルタイム同期機能で、常に最新の情報を共有できます"
+              icon={<Icons.search className="w-8 h-8" />}
+              title="検索・フィルター"
+              desc="カテゴリやタグで簡単にイラストを検索・フィルタリングできます"
             />
             <Feature
-              icon={<Icons.smartphone className="w-8 h-8" />}
-              title="モバイル対応"
-              desc="スマートフォンやタブレットからもアクセス可能です"
+              icon={<Icons.heart className="w-8 h-8" />}
+              title="お気に入り機能"
+              desc="気に入ったイラストをお気に入りに保存して、後で簡単にアクセスできます"
+            />
+            <Feature
+              icon={<Icons.user className="w-8 h-8" />}
+              title="イラストレーター登録"
+              desc="あなたもイラストレーターとして作品を投稿・販売できます"
             />
             <Feature
               icon={<Icons.shield className="w-8 h-8" />}
-              title="セキュリティ"
-              desc="企業レベルのセキュリティで、大切なデータを保護します"
-            />
-            <Feature
-              icon={<Icons.rocket className="w-8 h-8" />}
-              title="高速処理"
-              desc="高速な処理性能で、ストレスフリーな操作を実現します"
+              title="商用利用可能"
+              desc="商用利用可能なライセンスで、ビジネスでも安心してご利用いただけます"
             />
           </div>
         </div>
@@ -129,77 +172,98 @@ export default function Page() {
               料金プラン
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              ニーズに合わせて選べる2つのプラン
+              あなたに最適なプランを選んで、高品質なイラストをお楽しみください
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {/* Free Plan */}
-            <div className="bg-white rounded-lg border-2 border-gray-200 p-8 hover:border-gray-300 transition-colors">
-              <div className="mb-8">
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">無料プラン</h3>
-                <p className="text-gray-600 mb-6">個人での利用や試用に最適</p>
-                <div className="flex items-baseline">
-                  <span className="text-5xl font-bold text-gray-900">¥0</span>
-                  <span className="text-gray-500 ml-2">/月</span>
-                </div>
-              </div>
-
-              <ul className="space-y-4 mb-8">
-                <li className="text-gray-700">• プロジェクト3個まで</li>
-                <li className="text-gray-700">• チームメンバー3名まで</li>
-                <li className="text-gray-700">• 基本サポート</li>
-                <li className="text-gray-700">• 基本分析機能</li>
-                <li className="text-gray-400">• API連携は利用不可</li>
-              </ul>
-
-              <Link href="/auth/signup">
-                <Button variant="outline" size="lg" className="w-full border-2 border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white">
-                  無料で始める
-                </Button>
-              </Link>
-
-              <p className="text-sm text-gray-500 mt-4 text-center">
-                クレジットカード不要
-              </p>
+          {isLoading ? (
+            <div className="flex justify-center items-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
             </div>
-
-            {/* Premium Plan */}
-            <div className="bg-gray-900 rounded-lg p-8 text-white relative overflow-hidden">
-              <div className="absolute top-4 right-4">
-                <span className="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium">
-                  おすすめ
-                </span>
-              </div>
-
-              <div className="mb-8">
-                <h3 className="text-2xl font-bold mb-2">プレミアム</h3>
-                <p className="text-gray-300 mb-6">チームでの本格運用に</p>
-                <div className="flex items-baseline">
-                  <span className="text-5xl font-bold">¥980</span>
-                  <span className="text-gray-400 ml-2">/月</span>
+          ) : (
+            <div className="grid lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
+              {/* Free Plan */}
+              <div className="bg-white rounded-lg border-2 border-gray-200 p-8 hover:border-gray-300 transition-colors">
+                <div className="mb-8">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">無料プラン</h3>
+                  <p className="text-gray-600 mb-6">お試しや個人利用に最適</p>
+                  <div className="flex items-baseline">
+                    <span className="text-5xl font-bold text-gray-900">¥0</span>
+                    <span className="text-gray-500 ml-2">/月</span>
+                  </div>
                 </div>
+
+                <ul className="space-y-4 mb-8">
+                  <li className="text-gray-700">• 月5作品までダウンロード</li>
+                  <li className="text-gray-700">• 基本検索・フィルター機能</li>
+                  <li className="text-gray-700">• お気に入り機能</li>
+                  <li className="text-gray-700">• 個人利用のみ</li>
+                  <li className="text-gray-400">• 商用利用は不可</li>
+                </ul>
+
+                <Link href="/auth/signup">
+                  <Button variant="outline" size="lg" className="w-full border-2 border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white">
+                    無料で始める
+                  </Button>
+                </Link>
+
+                <p className="text-sm text-gray-500 mt-4 text-center">
+                  クレジットカード不要
+                </p>
               </div>
 
-              <ul className="space-y-4 mb-8">
-                <li className="text-gray-100">• 無制限のプロジェクト</li>
-                <li className="text-gray-100">• チームメンバー20名まで</li>
-                <li className="text-gray-100">• 24時間優先サポート</li>
-                <li className="text-gray-100">• 高度な分析機能</li>
-                <li className="text-gray-100">• API連携</li>
-              </ul>
+              {/* Premium Plans from Stripe */}
+              {products.map((product, index) => {
+                if (!product.price) return null
 
-              <Link href="/billing">
-                <Button size="lg" className="w-full bg-white text-gray-900 hover:bg-gray-100 font-semibold">
-                  今すぐ始める
-                </Button>
-              </Link>
+                const amount = product.price.amount ? product.price.amount : 0
+                const interval = product.price.interval === 'month' ? '月' :
+                  product.price.interval === 'year' ? '年' :
+                    product.price.interval || ''
 
-              <p className="text-sm text-gray-400 mt-4 text-center">
-                いつでもキャンセル可能
-              </p>
+                return (
+                  <div key={product.id} className="bg-gray-900 rounded-lg p-8 text-white relative overflow-hidden">
+                    {index === 0 && (
+                      <div className="absolute top-4 right-4">
+                        <span className="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                          おすすめ
+                        </span>
+                      </div>
+                    )}
+
+                    <div className="mb-8">
+                      <h3 className="text-2xl font-bold mb-2">{product.name}</h3>
+                      <p className="text-gray-300 mb-6">
+                        {product.description || 'クリエイター・ビジネス利用に最適'}
+                      </p>
+                      <div className="flex items-baseline">
+                        <span className="text-5xl font-bold">¥{amount.toLocaleString()}</span>
+                        <span className="text-gray-400 ml-2">/{interval}</span>
+                      </div>
+                    </div>
+
+                    <ul className="space-y-4 mb-8">
+                      <li className="text-gray-100">• 無制限ダウンロード</li>
+                      <li className="text-gray-100">• 商用利用可能</li>
+                      <li className="text-gray-100">• 高解像度画像</li>
+                      <li className="text-gray-100">• 優先サポート</li>
+                      <li className="text-gray-100">• イラストレーター登録可能</li>
+                    </ul>
+
+                    <Link href="/pricing">
+                      <Button size="lg" className="w-full bg-white text-gray-900 hover:bg-gray-100 font-semibold">
+                        今すぐ始める
+                      </Button>
+                    </Link>
+
+                    <p className="text-sm text-gray-400 mt-4 text-center">
+                      いつでもキャンセル可能
+                    </p>
+                  </div>
+                )
+              })}
             </div>
-          </div>
+          )}
         </div>
       </section>
 
@@ -247,8 +311,8 @@ export default function Page() {
             </h2>
 
             <p className="text-xl text-blue-100 mb-10 max-w-3xl mx-auto leading-relaxed">
-              アカウント作成は簡単で、すぐに全ての機能をお試しいただけます。<br />
-              まずは無料プランから始めて、必要に応じてアップグレードしてください。
+              高品質なイラストを無制限にダウンロードして、<br />
+              あなたのクリエイティブな活動を加速させましょう。
             </p>
 
             <div className="mb-8">
@@ -275,12 +339,16 @@ export default function Page() {
           </div>
           <div className="space-y-4">
             <FAQ
-              q="料金はいつ請求されますか？"
-              a="月額プランの場合、毎月同じ日に自動的に請求されます。"
+              q="商用利用はできますか？"
+              a="プレミアムプランでは商用利用が可能です。無料プランは個人利用のみとなります。"
             />
             <FAQ
-              q="サポートはどのように受けられますか？"
-              a="メールサポートを提供しております。"
+              q="イラストレーターとして登録できますか？"
+              a="はい、プレミアムプランではイラストレーターとして作品を投稿・販売できます。"
+            />
+            <FAQ
+              q="ダウンロードしたイラストの著作権はどうなりますか？"
+              a="ダウンロードしたイラストは、プランに応じた利用規約に従ってご利用いただけます。"
             />
             <FAQ
               q="プランの変更やキャンセルはできますか？"

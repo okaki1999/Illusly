@@ -16,9 +16,133 @@ enum SubscriptionStatus {
   unpaid
 }
 
+enum UserRole {
+  user
+  illustrator
+  admin
+}
+
+enum IllustrationStatus {
+  draft
+  published
+  private
+}
+
+model User {
+  id                    String               @id @default(cuid())
+  stackUserId           String               @unique
+  email                 String               @unique
+  name                  String?
+  role                  UserRole             @default(user)
+  profileImage          String?
+  bio                   String?
+  website               String?
+  socialLinks           Json?
+  isVerified            Boolean              @default(false)
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @updatedAt
+
+  // Relations
+  illustrations         Illustration[]
+  favorites             Favorite[]
+  downloadHistory       DownloadHistory[]
+  subscription          Subscription?
+}
+
+model Category {
+  id                    String               @id @default(cuid())
+  name                  String               @unique
+  slug                  String               @unique
+  description           String?
+  color                 String?
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @updatedAt
+
+  // Relations
+  illustrations         Illustration[]
+}
+
+model Tag {
+  id                    String               @id @default(cuid())
+  name                  String               @unique
+  slug                  String               @unique
+  createdAt             DateTime             @default(now())
+
+  // Relations
+  illustrations         IllustrationTag[]
+}
+
+model Illustration {
+  id                    String               @id @default(cuid())
+  title                 String
+  description           String?
+  imageUrl              String
+  thumbnailUrl          String?
+  width                 Int?
+  height                Int?
+  fileSize              Int?
+  mimeType              String?
+  status                IllustrationStatus   @default(draft)
+  isFree                Boolean              @default(false)
+  downloadCount         Int                  @default(0)
+  viewCount             Int                  @default(0)
+  favoriteCount         Int                  @default(0)
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @updatedAt
+
+  // Foreign Keys
+  userId                String
+  categoryId            String?
+
+  // Relations
+  user                  User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category              Category?            @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  tags                  IllustrationTag[]
+  favorites             Favorite[]
+  downloadHistory       DownloadHistory[]
+}
+
+model IllustrationTag {
+  id                    String               @id @default(cuid())
+  illustrationId        String
+  tagId                 String
+
+  // Relations
+  illustration          Illustration         @relation(fields: [illustrationId], references: [id], onDelete: Cascade)
+  tag                   Tag                  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([illustrationId, tagId])
+}
+
+model Favorite {
+  id                    String               @id @default(cuid())
+  userId                String
+  illustrationId        String
+  createdAt             DateTime             @default(now())
+
+  // Relations
+  user                  User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  illustration          Illustration         @relation(fields: [illustrationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, illustrationId])
+}
+
+model DownloadHistory {
+  id                    String               @id @default(cuid())
+  userId                String
+  illustrationId        String
+  downloadedAt          DateTime             @default(now())
+  ipAddress             String?
+  userAgent             String?
+
+  // Relations
+  user                  User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  illustration          Illustration         @relation(fields: [illustrationId], references: [id], onDelete: Cascade)
+}
+
 model Subscription {
   id                     String               @id @default(cuid())
-  userId                 String               @unique  // Neon AuthのUser ID
+  userId                 String               @unique
   stripeCustomerId       String               @unique
   stripeSubscriptionId   String               @unique
   status                 SubscriptionStatus
@@ -27,4 +151,7 @@ model Subscription {
   cancelAtPeriodEnd      Boolean              @default(false)
   createdAt              DateTime             @default(now())
   updatedAt              DateTime             @updatedAt
+
+  // Relations
+  user                   User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

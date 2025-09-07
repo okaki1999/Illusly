@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
   try {
     const app = getStackServerApp()
     const user = await app.getUser()
-    
+
     if (!user?.primaryEmail) {
       return NextResponse.json(
         { error: '認証が必要です' },
@@ -57,7 +57,10 @@ export async function POST(req: NextRequest) {
       billing_address_collection: 'auto',
     })
 
-    return NextResponse.json({ sessionId: checkoutSession.id })
+    return NextResponse.json({
+      sessionId: checkoutSession.id,
+      url: checkoutSession.url
+    })
   } catch (error) {
     console.error('Stripe checkout error:', error)
     return NextResponse.json(

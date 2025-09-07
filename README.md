@@ -5,6 +5,8 @@
 - **メール**: Resend によるお問い合わせメール送信（レート制限付き）
 - **DB/ORM**: Neon PostgreSQL + Prisma。`Subscription` モデルで購読状態を管理
 - **UI**: Next.js App Router、Tailwind CSS、shadcn/ui コンポーネント
+- **作品管理**: イラストレーター向けの作品投稿・管理機能
+- **ユーザーロール**: 一般ユーザー・イラストレーター・管理者の役割分離
 
 ### ディレクトリ構成（抜粋）
 
@@ -12,23 +14,33 @@
 startpack/
 ├── app/
 │   ├── api/
+│   │   ├── auth/role/route.ts          # ユーザーロール管理
+│   │   ├── categories/route.ts         # カテゴリ一覧
 │   │   ├── contact/route.ts            # お問い合わせ送信
+│   │   ├── illustrations/route.ts      # 作品投稿・一覧
+│   │   ├── tags/route.ts               # タグ一覧
 │   │   └── stripe/
 │   │       ├── checkout/route.ts       # Checkout セッション作成
 │   │       ├── portal/route.ts         # Customer Portal セッション
 │   │       ├── webhook/route.ts        # Webhook 受信
 │   │       └── subscription/route.ts    # 現在の購読状態取得
 │   ├── auth/                            # サインイン/サインアップ等
+│   │   └── become-illustrator/         # イラストレーター登録
 │   ├── billing/                         # 請求・購読ページ
 │   ├── contact/                         # お問い合わせページ
 │   ├── dashboard/                       # ログイン必須ページ
+│   │   └── upload/                      # 作品投稿ページ
 │   ├── handler/                         # Stack Auth ハンドラー
 │   ├── layout.tsx / page.tsx / providers.tsx
 │   └── globals.css
 ├── components/                          # 共通 UI
+│   ├── dashboard/                       # ダッシュボード用コンポーネント
+│   └── ui/                              # 基本UIコンポーネント
 ├── lib/                                 # `stack`/`stripe`/`prisma` ラッパー
+│   └── auth.ts                          # 認証・ロール管理
 ├── prisma/
-│   └── schema.prisma                    # `Subscription` モデル
+│   ├── schema.prisma                    # データベーススキーマ
+│   └── seed.ts                          # 初期データ（カテゴリ・タグ）
 ├── middleware.ts                        # `/dashboard` & `/billing` をガード
 ├── .env.example
 └── package.json（dev: port 3002）
@@ -63,7 +75,13 @@ cp .env.example .env
 npx prisma migrate dev
 ```
 
-6. 開発サーバーを起動（http://localhost:3002）
+6. 初期データ（カテゴリ・タグ）を投入
+
+```bash
+npm run db:seed
+```
+
+7. 開発サーバーを起動（http://localhost:3002）
 
 ```bash
 npm run dev
@@ -167,11 +185,59 @@ stripe listen --forward-to localhost:3002/api/stripe/webhook
   - 送信元はコード上 `onboarding@resend.dev` を使用（`RESEND_FROM` は設定しない）
 - 実装は `app/api/contact/route.ts`。件名/本文/送信元/返信先などはコードで調整できます
 
+### 画像アップロード
+
+現在、作品投稿機能では画像アップロードが実装されていますが、**開発環境では仮のURLが設定されています**。
+
+#### 開発環境での動作
+- 作品投稿は正常に動作します
+- データベースには仮のURLが保存されます
+- 画像の表示はできません（仮URLのため）
+
+#### 本番環境での設定
+
+**Vercel Blob を使用する場合（推奨）:**
+
+1. 依存関係をインストール
+```bash
+npm install @vercel/blob
+```
+
+2. 環境変数を設定
+```env
+BLOB_READ_WRITE_TOKEN=your_vercel_blob_token
+```
+
+3. Vercel ダッシュボードで Blob ストレージを有効化し、トークンを取得
+
+**AWS S3 を使用する場合:**
+
+1. 依存関係をインストール
+```bash
+npm install @aws-sdk/client-s3 @aws-sdk/s3-request-presigner
+```
+
+2. 環境変数を設定
+```env
+AWS_ACCESS_KEY_ID=your_access_key
+AWS_SECRET_ACCESS_KEY=your_secret_key
+AWS_REGION=your_region
+AWS_S3_BUCKET=your_bucket_name
+```
+
+3. S3 バケットを作成し、適切な権限を設定
+
+#### 実装の変更が必要な箇所
+- `app/api/illustrations/route.ts` の画像アップロード処理
+- 実際のストレージサービスへの画像保存
+- サムネイル生成（オプション）
+
 ### スクリプト
 
 - `npm run dev`: 開発サーバー起動（ポート 3002）
 - `npm run build`: 本番ビルド
 - `npm run start`: 本番起動
+- `npm run db:seed`: 初期データ（カテゴリ・タグ）を投入
 - `npx prisma migrate dev`: マイグレーション適用
 - `npx prisma generate`: Prisma Client 再生成
 
@@ -181,3 +247,84 @@ stripe listen --forward-to localhost:3002/api/stripe/webhook
 - **認証が機能しない**: Neon Auth の 3 変数を設定。ブラウザの Cookie を有効に
 - **Stripe 失敗**: Price ID/キーのテスト/本番モード整合、Webhook 設定、`STRIPE_WEBHOOK_SECRET` を確認。ローカルは `stripe listen` を実行
 - **メール未送信**: 開発はアカウント宛のみ送信可。`RESEND_API_KEY` とログを確認。必要なら `SKIP_EMAIL_SEND=true`
+- **作品投稿ができない**: イラストレーター権限が必要。ダッシュボードで「イラストレーターとして登録」を実行
+- **カテゴリ・タグが表示されない**: `npm run db:seed` で初期データを投入
+- **画像が表示されない**: 開発環境では仮URLのため正常。本番環境では画像ストレージの設定が必要
+
+## 🚀 本番環境へのデプロイ
+
+### Vercelへのデプロイ
+
+1. **Vercelアカウントの準備**
+   - [Vercel](https://vercel.com)でアカウント作成
+   - GitHubリポジトリを接続
+
+2. **環境変数の設定**
+   Vercelのダッシュボードで以下の環境変数を設定：
+
+   ```bash
+   # Database
+   DATABASE_URL="postgresql://username:password@host:5432/database"
+
+   # Stack Auth
+   STACK_PROJECT_ID="your_stack_project_id"
+   STACK_PUBLISHABLE_CLIENT_KEY="your_stack_publishable_client_key"
+   STACK_SERVER_SECRET_KEY="your_stack_server_secret_key"
+
+   # Stripe
+   STRIPE_SECRET_KEY="sk_live_..."
+   STRIPE_PUBLISHABLE_KEY="pk_live_..."
+   STRIPE_PRICE_ID="price_..."
+   STRIPE_WEBHOOK_SECRET="whsec_..."
+
+   # App URL
+   NEXT_PUBLIC_APP_URL="https://your-domain.vercel.app"
+
+   # Email (Resend)
+   RESEND_API_KEY="re_..."
+   ```
+
+3. **データベースの準備**
+   - [Neon](https://neon.tech)または[Supabase](https://supabase.com)でPostgreSQLデータベースを作成
+   - 本番用の`DATABASE_URL`を取得
+
+4. **Stripeの設定**
+   - Stripeダッシュボードで本番用の商品・価格を作成
+   - Webhookエンドポイントを設定: `https://your-domain.vercel.app/api/stripe/webhook`
+
+5. **Stack Authの設定**
+   - Stack Authダッシュボードで本番用の設定を完了
+   - リダイレクトURLを設定
+
+6. **デプロイ**
+   ```bash
+   # Vercel CLIを使用する場合
+   npm i -g vercel
+   vercel --prod
+
+   # またはGitHubにプッシュして自動デプロイ
+   git push origin main
+   ```
+
+7. **本番データベースの初期化**
+   ```bash
+   npx prisma migrate deploy
+   npm run db:seed
+   ```
+
+### 必要な外部サービス
+
+- **データベース**: Neon PostgreSQL または Supabase
+- **認証**: Stack Auth
+- **決済**: Stripe
+- **メール**: Resend
+- **画像ストレージ**: Vercel Blob または AWS S3（本番環境用）
+
+### デプロイ前のチェックリスト
+
+- [ ] 環境変数がすべて設定されている
+- [ ] データベースが作成され、接続できる
+- [ ] Stripeの本番用商品・価格が作成されている
+- [ ] Stack Authの本番設定が完了している
+- [ ] Webhookエンドポイントが設定されている
+- [ ] 画像ストレージの設定が完了している（本番環境用）
