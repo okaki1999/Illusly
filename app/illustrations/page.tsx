@@ -283,11 +283,11 @@ export default function IllustrationsPage() {
                     description={illustration.description}
                     imageUrl={illustration.imageUrl}
                     thumbnailUrl={illustration.thumbnailUrl}
-                    author={{
-                      id: illustration.user?.id || '',
-                      name: illustration.user?.name || 'Unknown',
-                      profileImage: illustration.user?.profileImage || null
-                    }}
+                  author={{
+                    id: illustration.user?.id || '',
+                    name: illustration.user?.name || 'Unknown',
+                    profileImage: illustration.user?.profileImage || undefined
+                  }}
                     category={illustration.category}
                     tags={illustration.tags || []}
                     isFree={illustration.isFree}

@@ -44,10 +44,16 @@ export default function SignUpPage() {
       if (result.status === 'ok') {
         setInfo('確認メールを送信しました。メール内のリンクをクリックして認証を完了してください。')
       } else {
-        if (result.error.code === 'USER_WITH_EMAIL_ALREADY_EXISTS') {
-          setError('このメールアドレスは既に登録されています')
-        } else if (result.error.code === 'INVALID_EMAIL') {
-          setError('有効なメールアドレスを入力してください')
+        // Stack Authのエラーハンドリング
+        if (result.error && typeof result.error === 'object') {
+          const errorCode = (result.error as any).code || (result.error as any).type
+          if (errorCode === 'USER_WITH_EMAIL_ALREADY_EXISTS') {
+            setError('このメールアドレスは既に登録されています')
+          } else if (errorCode === 'INVALID_EMAIL') {
+            setError('有効なメールアドレスを入力してください')
+          } else {
+            setError('登録に失敗しました')
+          }
         } else {
           setError('登録に失敗しました')
         }

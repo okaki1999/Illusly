@@ -91,8 +91,6 @@ export const Icons = {
   search: Search,
   download: Download,
   image: Image,
-  check: Check,
-  x: X,
 }
 
 // アイコンのプロップスタイプ

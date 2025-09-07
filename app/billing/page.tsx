@@ -354,10 +354,10 @@ export default function BillingPage() {
                       ¥{payment.amount.toLocaleString()}
                     </p>
                     <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${payment.status === 'succeeded'
-                        ? 'bg-green-100 text-green-800'
-                        : payment.status === 'pending'
-                          ? 'bg-yellow-100 text-yellow-800'
-                          : 'bg-red-100 text-red-800'
+                      ? 'bg-green-100 text-green-800'
+                      : payment.status === 'pending'
+                        ? 'bg-yellow-100 text-yellow-800'
+                        : 'bg-red-100 text-red-800'
                       }`}>
                       {payment.status === 'succeeded' ? '完了' :
                         payment.status === 'pending' ? '処理中' : '失敗'}

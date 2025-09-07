@@ -36,10 +36,16 @@ export default function SignInPage() {
         router.push('/dashboard')
       } else {
         setIsLoading(false)
-        if (result.error.code === 'EMAIL_PASSWORD_MISMATCH') {
-          setError('メールアドレスまたはパスワードが正しくありません')
-        } else if (result.error.code === 'USER_NOT_FOUND') {
-          setError('このメールアドレスは登録されていません')
+        // Stack Authのエラーハンドリング
+        if (result.error && typeof result.error === 'object') {
+          const errorCode = (result.error as any).code || (result.error as any).type
+          if (errorCode === 'EMAIL_PASSWORD_MISMATCH') {
+            setError('メールアドレスまたはパスワードが正しくありません')
+          } else if (errorCode === 'USER_NOT_FOUND') {
+            setError('このメールアドレスは登録されていません')
+          } else {
+            setError('ログインに失敗しました')
+          }
         } else {
           setError('ログインに失敗しました')
         }

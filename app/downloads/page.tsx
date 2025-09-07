@@ -183,7 +183,7 @@ export default function DownloadsPage() {
                   author={{
                     id: illustration.user?.id || '',
                     name: illustration.user?.name || 'Unknown',
-                    profileImage: illustration.user?.profileImage || null
+                    profileImage: illustration.user?.profileImage || undefined
                   }}
                   category={illustration.category}
                   tags={illustration.tags || []}

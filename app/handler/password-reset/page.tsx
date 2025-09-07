@@ -9,7 +9,7 @@ export default function PasswordResetPage() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const app = useStackApp()
-  
+
   const [code] = useState(searchParams.get('code') || '')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -49,7 +49,7 @@ export default function PasswordResetPage() {
     // 強度メッセージと色の設定
     let message = ''
     let color = ''
-    
+
     if (score <= 2) {
       message = '弱い'
       color = 'text-red-600 bg-red-100'
@@ -86,8 +86,8 @@ export default function PasswordResetPage() {
                 パスワードリセットリンクが無効です。<br />
                 もう一度リクエストしてください。
               </p>
-              <Link 
-                href="/auth/forgot-password" 
+              <Link
+                href="/auth/forgot-password"
                 className="w-full py-2.5 px-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-sm font-medium rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-sm inline-block"
               >
                 パスワードリセットをリクエスト
@@ -136,10 +136,16 @@ export default function PasswordResetPage() {
         }, 3000)
       } else {
         console.error('Password reset failed:', result.error)
-        if (result.error?.code === 'INVALID_PASSWORD_RESET_CODE') {
-          setError('リセットコードが無効または期限切れです。もう一度リセットをリクエストしてください。')
-        } else if (result.error?.code === 'PASSWORD_REQUIREMENTS_NOT_MET') {
-          setError('パスワードが要件を満たしていません。より強力なパスワードを設定してください。')
+        // Stack Authのエラーハンドリング
+        if (result.error && typeof result.error === 'object') {
+          const errorCode = (result.error as any).code || (result.error as any).type
+          if (errorCode === 'INVALID_PASSWORD_RESET_CODE') {
+            setError('リセットコードが無効または期限切れです。もう一度リセットをリクエストしてください。')
+          } else if (errorCode === 'PASSWORD_REQUIREMENTS_NOT_MET') {
+            setError('パスワードが要件を満たしていません。より強力なパスワードを設定してください。')
+          } else {
+            setError('パスワードのリセットに失敗しました。もう一度お試しください。')
+          }
         } else {
           setError('パスワードのリセットに失敗しました。もう一度お試しください。')
         }
@@ -171,8 +177,8 @@ export default function PasswordResetPage() {
                 新しいパスワードが設定されました。<br />
                 ログインページに移動しています...
               </p>
-              <Link 
-                href="/auth/signin" 
+              <Link
+                href="/auth/signin"
                 className="w-full py-2.5 px-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-sm font-medium rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-sm inline-block"
               >
                 今すぐログイン
@@ -235,8 +241,8 @@ export default function PasswordResetPage() {
                 {error}
                 {error.includes('期限切れ') && (
                   <div className="mt-1.5">
-                    <Link 
-                      href="/auth/forgot-password" 
+                    <Link
+                      href="/auth/forgot-password"
                       className="underline font-medium"
                     >
                       → 新しいリセットリンクをリクエスト
@@ -256,8 +262,8 @@ export default function PasswordResetPage() {
           </form>
 
           <div className="mt-4 text-center text-xs text-slate-500">
-            <Link 
-              href="/auth/signin" 
+            <Link
+              href="/auth/signin"
               className="text-blue-600 hover:text-blue-700 font-medium"
             >
               ← ログインページに戻る
