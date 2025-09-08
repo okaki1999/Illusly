@@ -56,7 +56,24 @@ export async function GET(req: NextRequest) {
     })
 
     // データを整形
-    const illustrations = downloads.map(download => ({
+    const illustrations = downloads.map((download: {
+      illustration: {
+        id: string;
+        title: string;
+        description: string | null;
+        imageUrl: string;
+        thumbnailUrl: string | null;
+        user: { id: string; name: string | null; profileImage: string | null };
+        category: { name: string; color: string | null } | null;
+        tags: { tag: { name: string } }[];
+        isFree: boolean;
+        downloadCount: number;
+        favoriteCount: number;
+        viewCount: number;
+        createdAt: Date;
+      };
+      downloadedAt: Date;
+    }) => ({
       id: download.illustration.id,
       title: download.illustration.title,
       description: download.illustration.description,
