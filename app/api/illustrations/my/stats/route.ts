@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server'
 import { requireAuth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
+// 認証が必要なAPIルートは動的にする
+export const dynamic = 'force-dynamic'
+
 /**
  * 自分の作品の統計情報を取得
  */

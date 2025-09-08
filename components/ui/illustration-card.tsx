@@ -76,14 +76,13 @@ export function IllustrationCard({
               <Icons.loader className="w-8 h-8 text-gray-400 animate-spin" />
             </div>
           )}
-          
+
           {!imageError ? (
             <img
               src={thumbnailUrl || imageUrl}
               alt={title}
-              className={`w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 ${
-                imageLoading ? 'opacity-0' : 'opacity-100'
-              }`}
+              className={`w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 ${imageLoading ? 'opacity-0' : 'opacity-100'
+                }`}
               onLoad={() => setImageLoading(false)}
               onError={() => {
                 setImageLoading(false)
@@ -99,7 +98,7 @@ export function IllustrationCard({
           {/* カテゴリバッジ */}
           {category && (
             <div className="absolute top-3 left-3">
-              <span 
+              <span
                 className="px-2 py-1 text-xs font-medium text-white rounded-full"
                 style={{ backgroundColor: category.color || '#6B7280' }}
               >

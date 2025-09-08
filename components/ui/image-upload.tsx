@@ -45,7 +45,7 @@ export function ImageUpload({
 
   const handleFileSelect = useCallback((file: File) => {
     setError('')
-    
+
     const validationError = validateFile(file)
     if (validationError) {
       setError(validationError)
@@ -58,7 +58,7 @@ export function ImageUpload({
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault()
     setIsDragging(false)
-    
+
     if (disabled) return
 
     const files = Array.from(e.dataTransfer.files)

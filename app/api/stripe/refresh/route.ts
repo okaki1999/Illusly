@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { stripe, extractCurrentPeriodEndSeconds } from "@/lib/stripe";
 import { SubscriptionStatus } from "@prisma/client";
 
+
 export async function POST(_req: NextRequest) {
   try {
     const app = getStackServerApp();
@@ -50,4 +51,5 @@ export async function POST(_req: NextRequest) {
 }
 
 export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
+// 認証が必要なAPIルートは動的にする
+export const dynamic = 'force-dynamic';
